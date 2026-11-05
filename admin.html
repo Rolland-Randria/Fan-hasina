@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="mg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tahiry — Fan'Hasina</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--shadow);margin-top:1.2rem}
+  .panel h2{font-family:var(--serif);font-size:1.6rem;color:var(--brown);margin-bottom:.8rem}
+  .notice{border-radius:12px;padding:.8rem 1rem;background:var(--beige);color:var(--brown);margin-top:1.2rem;font-size:.95rem}
+  .notice.warn{background:#f6e2b8}
+  .row{display:flex;align-items:center;gap:.6rem;padding:.7rem 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .row:last-child{border-bottom:0}
+  .row .t{flex:1;min-width:150px}
+  .row .t small{display:block;color:var(--brown-l)}
+  .row .b{display:flex;gap:.4rem;flex-wrap:wrap}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+  @media(max-width:600px){.two{grid-template-columns:1fr}}
+  .admin-tag{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brown-l)}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">Fan'Hasina</a>
+    <span class="admin-tag">Tahiry</span>
+  </div>
+</header>
+
+<main class="wrap page">
+  <h1 class="h1">Tantanana ny tranonkala</h1>
+  <p class="lead">Eto no ampidirana, anovana na fafana ny tononkalo. Rehefa vita, alaivo ny <strong>data.js</strong> vaovao ary soloy ny taloha ao amin'ny hosting.</p>
+
+  <div id="status" class="notice"></div>
+
+  <section class="panel">
+    <h2>Ireo tononkalo</h2>
+    <div id="list"></div>
+  </section>
+
+  <section class="panel">
+    <h2 id="formTitle">Tononkalo vaovao</h2>
+    <form id="form" autocomplete="off">
+      <div class="two">
+        <div class="field"><label for="f-titre">Lohateny</label><input type="text" id="f-titre" required></div>
+        <div class="field"><label for="f-cat">Sokajy</label><select id="f-cat"></select></div>
+      </div>
+      <div class="field"><label for="f-texte">Tononkalo (avelao ho tsy misy fiovana ny soratra)</label><textarea id="f-texte" style="min-height:260px" required></textarea></div>
+      <div class="field"><label for="f-sig">Sonia</label><input type="text" id="f-sig" value="Fan'Hasina"></div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        <button type="submit" class="btn" id="f-save">Tehirizo</button>
+        <button type="button" class="btn ghost" id="f-cancel" hidden>Foano ny fanovana</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Galerie</h2>
+    <p class="muted" style="margin-bottom:.8rem">Apetraho ao amin'ny lahatahiry <strong>images</strong> ny rakitry ny sary (ohatra <em>sary1.jpg</em>), avy eo ampidiro eto ny anarany.</p>
+    <div id="gal"></div>
+    <div class="two" style="margin-top:1rem">
+      <div class="field"><label for="g-src">Làlana (ohatra images/sary1.jpg)</label><input type="text" id="g-src"></div>
+      <div class="field"><label for="g-leg">Fanazavana fohy</label><input type="text" id="g-leg"></div>
+    </div>
+    <button type="button" class="btn ghost small" id="g-add">Ampio ny sary</button>
+  </section>
+
+  <section class="panel">
+    <h2>Fanamboarana</h2>
+    <div class="field"><label for="s-fb">Rohy Facebook</label><input type="url" id="s-fb"></div>
+    <div class="field"><label for="s-mail">Mailaka (tsy voatery, aseho ao amin'ny Contact raha feno)</label><input type="email" id="s-mail"></div>
+    <div class="field"><label for="s-tag">Teny filamatra eo amin'ny Accueil</label><input type="text" id="s-tag"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Famoahana</h2>
+    <p class="muted" style="margin-bottom:1rem">Ny fiovana dia voatahiry vonjimaika ao amin'ity finday ity. Mba hiseho amin'ny rehetra, alaivo ny data.js ary apetraka ao amin'ny hosting.</p>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+      <button type="button" class="btn" id="download">Alaivo ny data.js vaovao</button>
+      <button type="button" class="btn ghost" id="reset">Avereno araka ny rakitra</button>
+      <a class="btn ghost" href="index.html">Hijery ny tranonkala</a>
+    </div>
+  </section>
+</main>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  'use strict';
+  const KEY = 'fanhasina_brouillon_v1';
+  const CATS = ['Fiainana', 'Fitiavana', 'Fiaraha-monina', 'Fanantenana', 'Fisaintsainana'];
+  const $ = (id) => document.getElementById(id);
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  let state = null, hasDraft = false, editId = null;
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { state = JSON.parse(raw); hasDraft = true; }
+  } catch (e) { state = null; }
+  if (!state || !Array.isArray(state.poemes)) { state = clone(window.FANHASINA || {}); hasDraft = false; }
+  state.poemes = state.poemes || [];
+  state.galerie = state.galerie || [];
+
+  function persist() {
+    hasDraft = true;
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    renderStatus();
+  }
+
+  function renderStatus() {
+    const s = $('status');
+    s.className = 'notice' + (hasDraft ? ' warn' : '');
+    s.innerHTML = hasDraft
+      ? "Misy fiovana mbola tsy navoaka. Alaivo ny <strong>data.js</strong> vaovao ary soloy ny taloha ao amin'ny hosting."
+      : "Mitovy amin'ny tranonkala ankehitriny ny zavatra eto.";
+  }
+
+  function slug(t) {
+    let s = t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    if (!s) s = 'tononkalo';
+    let id = s, i = 2;
+    while (state.poemes.some((p) => p.id === id)) id = s + '-' + i++;
+    return id;
+  }
+
+  function renderList() {
+    const l = $('list');
+    if (!state.poemes.length) { l.innerHTML = '<p class="muted">Mbola tsy misy tononkalo.</p>'; return; }
+    l.innerHTML = state.poemes.map((p, i) => `
+      <div class="row">
+        <div class="t"><strong>${esc(p.titre)}</strong><small>${esc(p.categorie)}</small></div>
+        <div class="b">
+          <button type="button" class="btn ghost small" data-act="up" data-id="${esc(p.id)}" ${i === 0 ? 'disabled' : ''} aria-label="Ambony">↑</button>
+          <button type="button" class="btn ghost small" data-act="down" data-id="${esc(p.id)}" ${i === state.poemes.length - 1 ? 'disabled' : ''} aria-label="Ambany">↓</button>
+          <button type="button" class="btn ghost small" data-act="edit" data-id="${esc(p.id)}">Hanova</button>
+          <button type="button" class="btn danger small" data-act="del" data-id="${esc(p.id)}">Hamafa</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderGallery() {
+    const g = $('gal');
+    if (!state.galerie.length) { g.innerHTML = '<p class="muted">Mbola tsy misy sary.</p>'; return; }
+    g.innerHTML = state.galerie.map((x, i) => `
+      <div class="row">
+        <div class="t"><strong>${esc(x.src)}</strong><small>${esc(x.legende || '')}</small></div>
+        <div class="b"><button type="button" class="btn danger small" data-gdel="${i}">Hamafa</button></div>
+      </div>`).join('');
+  }
+
+  function fillSettings() {
+    $('s-fb').value = state.facebook || '';
+    $('s-mail').value = state.email || '';
+    $('s-tag').value = state.tagline || '';
+  }
+
+  function resetForm() {
+    editId = null;
+    $('form').reset();
+    $('f-sig').value = "Fan'Hasina";
+    $('f-cat').value = CATS[0];
+    $('formTitle').textContent = 'Tononkalo vaovao';
+    $('f-save').textContent = 'Tehirizo';
+    $('f-cancel').hidden = true;
+  }
+
+  $('f-cat').innerHTML = CATS.map((c) => `<option>${esc(c)}</option>`).join('');
+
+  $('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const titre = $('f-titre').value.trim();
+    const texte = $('f-texte').value.replace(/\r\n?/g, '\n').replace(/^\n+|\n+$/g, '');
+    if (!titre || !texte) return;
+    const data = { titre: titre, categorie: $('f-cat').value, signature: $('f-sig').value.trim() || "Fan'Hasina", texte: texte };
+    if (editId) {
+      const i = state.poemes.findIndex((p) => p.id === editId);
+      if (i >= 0) state.poemes[i] = Object.assign({ id: editId }, data);
+    } else {
+      state.poemes.unshift(Object.assign({ id: slug(titre) }, data));
+    }
+    persist(); renderList(); resetForm();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  $('f-cancel').addEventListener('click', resetForm);
+
+  $('list').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-act]');
+    if (!b) return;
+    const id = b.dataset.id;
+    const i = state.poemes.findIndex((p) => p.id === id);
+    if (i < 0) return;
+    if (b.dataset.act === 'edit') {
+      const p = state.poemes[i];
+      editId = id;
+      $('f-titre').value = p.titre;
+      $('f-cat').value = p.categorie;
+      $('f-texte').value = p.texte;
+      $('f-sig').value = p.signature || '';
+      $('formTitle').textContent = 'Fanovana: ' + p.titre;
+      $('f-save').textContent = 'Tehirizo ny fanovana';
+      $('f-cancel').hidden = false;
+      $('form').scrollIntoView({ behavior: 'smooth' });
+    } else if (b.dataset.act === 'del') {
+      if (confirm('Fafana tokoa ve ny tononkalo "' + state.poemes[i].titre + '"?')) {
+        state.poemes.splice(i, 1);
+        if (editId === id) resetForm();
+        persist(); renderList();
+      }
+    } else if (b.dataset.act === 'up' && i > 0) {
+      [state.poemes[i - 1], state.poemes[i]] = [state.poemes[i], state.poemes[i - 1]];
+      persist(); renderList();
+    } else if (b.dataset.act === 'down' && i < state.poemes.length - 1) {
+      [state.poemes[i + 1], state.poemes[i]] = [state.poemes[i], state.poemes[i + 1]];
+      persist(); renderList();
+    }
+  });
+
+  $('g-add').addEventListener('click', () => {
+    const src = $('g-src').value.trim();
+    if (!src) return;
+    state.galerie.push({ src: src, legende: $('g-leg').value.trim() });
+    $('g-src').value = ''; $('g-leg').value = '';
+    persist(); renderGallery();
+  });
+
+  $('gal').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-gdel]');
+    if (!b) return;
+    state.galerie.splice(Number(b.dataset.gdel), 1);
+    persist(); renderGallery();
+  });
+
+  [['s-fb', 'facebook'], ['s-mail', 'email'], ['s-tag', 'tagline']].forEach(([id, key]) => {
+    $(id).addEventListener('input', () => {
+      const v = $(id).value.trim();
+      if (v) state[key] = v; else delete state[key];
+      persist();
+    });
+  });
+
+  $('download').addEventListener('click', () => {
+    const stamp = new Date().toISOString().slice(0, 10);
+    const txt = "/* FAN'HASINA — data.js (noforonina tamin'ny pejy Tahiry, " + stamp + ") */\n\nwindow.FANHASINA = " + JSON.stringify(state, null, 2) + ';\n';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/javascript' }));
+    a.download = 'data.js';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  });
+
+  $('reset').addEventListener('click', () => {
+    if (!confirm("Foanana ny fiovana rehetra tsy mbola navoaka ve?")) return;
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    location.reload();
+  });
+
+  renderStatus(); renderList(); renderGallery(); fillSettings(); resetForm();
+})();
+</script>
+</body>
+</html>
