@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="mg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fan'Hasina — Poeta malagasy</title>
+<meta name="description" content="Tranonkala manokan'i Fan'Hasina, poeta malagasy: tononkalo, eritreritra ary hafatra avy am-po.">
+<meta name="google-site-verification" content="wWRp2vABPReLsU8HMmGw04nwUR18GYYJ5loQcvXsbtE" />
+<meta name="theme-color" content="#F8F1E3">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fan'Hasina — Poeta malagasy">
+<meta property="og:description" content="Tononkalo, eritreritra ary hafatra avy am-po.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#app">Mankany amin'ny votoatiny</a>
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="#/">Fan'Hasina</a>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="nav" aria-label="Menu lehibe">
+      <a href="#/" data-nav="">Accueil</a>
+      <a href="#/apropos" data-nav="apropos">À propos</a>
+      <a href="#/poemes" data-nav="poemes">Mes poèmes</a>
+      <a href="#/galerie" data-nav="galerie">Galerie</a>
+      <a href="#/contact" data-nav="contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app" tabindex="-1">
+  <noscript><p class="wrap page">Mila mampandeha JavaScript ny tranonkala mba hampiseho ny tononkalo.</p></noscript>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="f-brand">Fan'Hasina</p>
+    <p class="f-sub">Poeta malagasy · Madagasikara</p>
+    <p class="f-copy">© <span id="year"></span> RANDRIANJAKATIANA Rolland · Voaaro ny zo rehetra</p>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
